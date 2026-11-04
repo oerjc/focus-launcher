@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">专注桌面</string>
+    <string name="select_title">今天要打开哪些应用？</string>
+    <string name="select_subtitle">选好后，本机重启前只能打开这些应用。电话与系统设置始终可用。</string>
+    <string name="confirm">确认</string>
+    <string name="search_hint">搜索应用</string>
+    <string name="home_title">今日允许的应用</string>
+    <string name="home_empty">还没有选择应用，点下方按钮开始。</string>
+    <string name="change_list">解锁后修改名单</string>
+    <string name="exit_launcher">解锁后退出专注桌面</string>
+    <string name="set_default_hint">请把「专注桌面」设为默认桌面，才能在按 Home 时生效。</string>
+    <string name="set_default">设为默认桌面</string>
+    <string name="auth_title">验证身份</string>
+    <string name="auth_subtitle_change">验证后可修改今日允许打开的应用</string>
+    <string name="auth_subtitle_exit">验证后可打开系统应用列表并切换桌面</string>
+    <string name="auth_failed">验证失败，请重试</string>
+    <string name="auth_error">无法验证：请先在系统设置中设置锁屏密码或生物识别</string>
+    <string name="escape_phone">电话</string>
+    <string name="escape_settings">设置</string>
+    <string name="escape_label">应急</string>
+    <string name="selected_count">已选 %1$d 个</string>
+    <string name="no_apps_found">没有找到匹配的应用</string>
+    <string name="open_failed">无法打开该应用</string>
+    <string name="boot_cleared">设备已重启，请重新选择今日应用</string>
+    <string name="use_system_picker">打开系统应用列表</string>
+    <string name="cancel">取消</string>
+</resources>
