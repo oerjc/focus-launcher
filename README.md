@@ -71,3 +71,7 @@ Android 专注启动器。把它设为默认桌面后，主屏幕只显示**本�
 ```
 
 产物路径：`app/build/outputs/apk/debug/app-debug.apk`。
+
+## 许可证
+
+本项目以 [MIT License](LICENSE) 发布。Copyright (c) 2026 oerjc。
