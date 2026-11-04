@@ -37,16 +37,4 @@ object AppRepository {
         return Intent(android.provider.Settings.ACTION_SETTINGS)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
-
-    fun resolveHomeChooser(context: Context): Intent {
-        val intent = Intent(Intent.ACTION_MAIN)
-            .addCategory(Intent.CATEGORY_HOME)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        return Intent.createChooser(intent, context.getString(R.string.exit_launcher))
-    }
-
-    fun openDefaultAppsSettings(@Suppress("UNUSED_PARAMETER") context: Context): Intent {
-        return Intent(android.provider.Settings.ACTION_HOME_SETTINGS)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
 }

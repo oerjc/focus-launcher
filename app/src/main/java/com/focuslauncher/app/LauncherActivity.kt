@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,10 +17,15 @@ class LauncherActivity : AppCompatActivity() {
     private lateinit var store: SessionStore
     private lateinit var gridAdapter: GridAppAdapter
     private var allAppsCache: List<AppInfo> = emptyList()
+    private var selectOpen = false
+    private var userDismissedSelect = false
+    private var explainedHomeBack = false
 
     private val selectLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
+    ) { result ->
+        selectOpen = false
+        userDismissedSelect = result.resultCode != RESULT_OK
         refreshUi()
     }
 
@@ -27,53 +33,89 @@ class LauncherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLauncherBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        SystemChrome.install(this, binding.root)
         store = SessionStore(this)
+        userDismissedSelect = savedInstanceState?.getBoolean(STATE_DISMISSED_SELECT) == true
 
         gridAdapter = GridAppAdapter { app -> launchApp(app) }
         binding.appsGrid.layoutManager = GridLayoutManager(this, 4)
         binding.appsGrid.adapter = gridAdapter
 
-        binding.phoneButton.setOnClickListener {
-            val dial = AppRepository.resolveDialerIntent(this)
-            if (dial != null) startActivity(dial)
-            else Toast.makeText(this, R.string.open_failed, Toast.LENGTH_SHORT).show()
-        }
+        binding.phoneButton.setOnClickListener { openDialer() }
         binding.settingsButton.setOnClickListener {
             startActivity(AppRepository.resolveSettingsIntent())
         }
-        binding.changeButton.setOnClickListener { authenticateThenChange() }
-        binding.exitButton.setOnClickListener { authenticateThenExit() }
-        binding.setDefaultButton.setOnClickListener {
-            try {
-                startActivity(AppRepository.openDefaultAppsSettings(this))
-            } catch (_: Exception) {
-                startActivity(AppRepository.resolveHomeChooser(this))
-            }
+        binding.changeButton.setOnClickListener {
+            if (store.hasActiveSession()) authenticateThenChange()
+            else openSelect()
         }
+        binding.exitButton.setOnClickListener {
+            HomeEscape.openSystemHomeSettings(this)
+        }
+        binding.setDefaultButton.setOnClickListener {
+            HomeEscape.openSystemHomeSettings(this)
+        }
+
+        // HOME has nowhere to go. Consume back here only — do not finish, or the
+        // system just restarts this activity. Secondary screens finish themselves.
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!explainedHomeBack) {
+                        explainedHomeBack = true
+                        Toast.makeText(
+                            this@LauncherActivity,
+                            R.string.home_back_nowhere,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_DISMISSED_SELECT, userDismissedSelect)
     }
 
     override fun onResume() {
         super.onResume()
-        ensureSessionOrSelect()
+        SystemChrome.showSystemBars(this)
         refreshUi()
     }
 
-    private fun ensureSessionOrSelect() {
-        if (!store.hasActiveSession()) {
-            openSelect(force = true)
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            SystemChrome.showSystemBars(this)
+            maybeOpenSelect()
         }
     }
 
-    private fun openSelect(force: Boolean) {
-        val intent = Intent(this, SelectAppsActivity::class.java)
-        if (force) {
-            // Clear any stale flags
+    private fun maybeOpenSelect() {
+        if (store.hasActiveSession() || userDismissedSelect || selectOpen) return
+        openSelect()
+    }
+
+    private fun openSelect() {
+        if (selectOpen) return
+        selectOpen = true
+        userDismissedSelect = false
+        try {
+            selectLauncher.launch(Intent(this, SelectAppsActivity::class.java))
+        } catch (_: Exception) {
+            selectOpen = false
+            Toast.makeText(this, R.string.open_failed, Toast.LENGTH_SHORT).show()
         }
-        selectLauncher.launch(intent)
     }
 
     private fun refreshUi() {
         updateDefaultHint()
+        binding.changeButton.setText(
+            if (store.hasActiveSession()) R.string.change_list else R.string.choose_apps
+        )
         if (!store.hasActiveSession()) {
             gridAdapter.submit(emptyList())
             binding.emptyText.visibility = View.VISIBLE
@@ -83,7 +125,6 @@ class LauncherActivity : AppCompatActivity() {
         if (allAppsCache.isEmpty()) {
             allAppsCache = AppRepository.loadLaunchableApps(this)
         }
-        // Prefer unique by package: show one launcher activity per allowed package
         val byPkg = allAppsCache
             .filter { it.packageName in allowed }
             .distinctBy { it.packageName }
@@ -113,30 +154,23 @@ class LauncherActivity : AppCompatActivity() {
         }
     }
 
+    private fun openDialer() {
+        val dial = AppRepository.resolveDialerIntent(this)
+        if (dial != null) startActivity(dial)
+        else Toast.makeText(this, R.string.open_failed, Toast.LENGTH_SHORT).show()
+    }
+
     private fun authenticateThenChange() {
         AuthHelper.authenticate(
             activity = this,
             title = getString(R.string.auth_title),
             subtitle = getString(R.string.auth_subtitle_change),
-            onSuccess = { openSelect(force = false) },
+            onSuccess = { openSelect() },
             onError = { msg -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show() }
         )
     }
 
-    private fun authenticateThenExit() {
-        AuthHelper.authenticate(
-            activity = this,
-            title = getString(R.string.auth_title),
-            subtitle = getString(R.string.auth_subtitle_exit),
-            onSuccess = {
-                // Open home chooser so user can pick another launcher / browse apps via Settings
-                try {
-                    startActivity(AppRepository.openDefaultAppsSettings(this))
-                } catch (_: Exception) {
-                    startActivity(AppRepository.resolveHomeChooser(this))
-                }
-            },
-            onError = { msg -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show() }
-        )
+    companion object {
+        private const val STATE_DISMISSED_SELECT = "dismissed_select"
     }
 }

@@ -2,18 +2,23 @@
 <resources>
     <string name="app_name">专注桌面</string>
     <string name="select_title">今天要打开哪些应用？</string>
-    <string name="select_subtitle">选好后，本机重启前只能打开这些应用。电话与系统设置始终可用。</string>
+    <string name="select_subtitle">选好后，本机重启前桌面只显示这些应用。电话、系统设置和「恢复系统桌面」始终可用，不需要验证。</string>
     <string name="confirm">确认</string>
     <string name="search_hint">搜索应用</string>
     <string name="home_title">今日允许的应用</string>
     <string name="home_empty">还没有选择应用，点下方按钮开始。</string>
     <string name="change_list">解锁后修改名单</string>
-    <string name="exit_launcher">解锁后退出专注桌面</string>
+    <string name="choose_apps">选择今日应用</string>
+    <string name="exit_launcher">恢复系统桌面</string>
     <string name="set_default_hint">请把「专注桌面」设为默认桌面，才能在按 Home 时生效。</string>
     <string name="set_default">设为默认桌面</string>
     <string name="auth_title">验证身份</string>
     <string name="auth_subtitle_change">验证后可修改今日允许打开的应用</string>
-    <string name="auth_subtitle_exit">验证后可打开系统应用列表并切换桌面</string>
+    <string name="gesture_oem_hint">若从屏幕边缘滑动无法返回：点「恢复系统桌面」换回系统桌面，或暂时改用三键导航。部分手机在第三方桌面为默认主屏幕时，系统全面屏手势会失效，本应用无法代替系统修好。</string>
+    <string name="select_restore_hint">不需要边缘滑动。点「恢复系统桌面」即可换回系统桌面；电话和设置也不需要验证。</string>
+    <string name="home_back_nowhere">主屏幕没有可返回的上一页。要恢复边缘手势，请点「恢复系统桌面」。</string>
+    <string name="restore_opened_fallback">未能直接打开「主屏幕应用」设置。请在打开的页面里找到默认应用或桌面，改回系统桌面。</string>
+    <string name="restore_failed">无法打开系统设置。请从通知栏进入系统设置，把默认桌面改回系统桌面。</string>
     <string name="auth_failed">验证失败，请重试</string>
     <string name="auth_error">无法验证：请先在系统设置中设置锁屏密码或生物识别</string>
     <string name="escape_phone">电话</string>
