@@ -74,7 +74,7 @@
         app:cardBackgroundColor="@color/escape_bg"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomActions"
+        app:layout_constraintBottom_toTopOf="@id/gestureHint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:strokeWidth="0dp">
@@ -111,6 +111,18 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <TextView
+        android:id="@+id/gestureHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/gesture_oem_hint"
+        android:textColor="@color/md_theme_secondary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/bottomActions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <LinearLayout
         android:id="@+id/bottomActions"
         android:layout_width="0dp"
@@ -121,18 +133,18 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/exitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/exit_launcher" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/changeButton"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="@string/change_list" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/exitButton"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/exit_launcher" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
